@@ -7,7 +7,7 @@ import SubCategory from '../../../db/models/subCategory.model.js';
 export const getCategories = async (req, res) => {
   try {
     await dbConnect();
-    const categories = await Category.find();
+    const categories = await Category.find().populate('subCategories');
     return res
       .status(200)
       .json({ success: true, message: 'Categories list retrieved', data: categories });
@@ -34,10 +34,13 @@ export const getSingleCategory = async (req, res) => {
 };
 
 export const addCategory = async (req, res) => {
-  const newCategory = req.body;
+  const { title } = req.body;
+  const { path: image } = req.file;
+
   try {
     await dbConnect();
-    const createCategory = await Category.create(newCategory);
+    const createCategory = await Category.create({ title, image });
+
     return res
       .status(201)
       .json({ success: true, message: 'Category added successfully', data: createCategory });
@@ -50,10 +53,11 @@ export const addCategory = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
   const newCategory = req.body;
+  console.log(newCategory);
   const _id = req.params.id;
   try {
     await dbConnect();
-    const isCategoryExist = await Category.findByIdAndUpdate(_id, newCategory);
+    const isCategoryExist = await Category.findByIdAndUpdate(_id, newCategory, { new: true });
     if (!isCategoryExist)
       return res.status(404).json({ success: false, message: 'Category not found', data: {} });
     return res
