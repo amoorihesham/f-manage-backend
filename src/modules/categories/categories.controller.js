@@ -53,7 +53,6 @@ export const addCategory = async (req, res) => {
 
 export const updateCategory = async (req, res) => {
   const newCategory = req.body;
-  console.log(newCategory);
   const _id = req.params.id;
   try {
     await dbConnect();
