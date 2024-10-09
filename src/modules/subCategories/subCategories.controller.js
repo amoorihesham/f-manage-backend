@@ -2,15 +2,18 @@ import mongoose from 'mongoose';
 import dbConnect from '../../../db/connection.js';
 import SubCategory from '../../../db/models/subCategory.model.js';
 import Category from '../../../db/models/category.model.js';
+import serverErrorResponse from '../../utils/serverErrorResponse.js';
 
 export const getSubCategories = async (req, res) => {
   try {
     await dbConnect();
-    const subCategories = await SubCategory.find();
+    const subCategories = await SubCategory.find().populate('category', '_id title');
+
     return res
       .status(200)
       .json({ success: true, message: 'SubCategories list retrieved', data: subCategories });
   } catch (error) {
+    return serverErrorResponse(res, error);
   } finally {
     await mongoose.disconnect();
   }
@@ -35,15 +38,21 @@ export const getSubCategory = async (req, res) => {
 
 export const addSubCategory = async (req, res) => {
   const { title, category } = req.body;
+  const { path: image } = req.file;
   try {
     await dbConnect();
-    const newSubCategory = await SubCategory.create({ title: title, category: category });
+    const newSubCategory = await SubCategory.create({ title, category, image });
     await Category.findByIdAndUpdate(category, {
       $push: { subCategories: newSubCategory._id },
     });
+    const newFullSubCategory = await SubCategory.findById(newSubCategory._id).populate(
+      'category',
+      '_id title'
+    );
+
     return res
       .status(201)
-      .json({ success: true, message: 'SubCategory added successfully', data: newSubCategory });
+      .json({ success: true, message: 'SubCategory added successfully', data: newFullSubCategory });
   } catch (error) {
   } finally {
     await mongoose.disconnect();
@@ -55,7 +64,7 @@ export const updateSubCategory = async (req, res) => {
   const _id = req.params.id;
   try {
     await dbConnect();
-    const updatedSubcategory = await SubCategory.findByIdAndUpdate(_id, { title });
+    const updatedSubcategory = await SubCategory.findByIdAndUpdate(_id, { title }, { new: true });
     console.log(updatedSubcategory);
     if (!updatedSubcategory)
       return res.status(404).json({ success: false, message: 'SubCategory not found', data: {} });
@@ -90,5 +99,6 @@ export const deleteSubCategory = async (req, res) => {
   } catch (error) {
   } finally {
     await mongoose.disconnect();
+    console.log('db Closed');
   }
 };
