@@ -1,8 +1,8 @@
-import mongoose from 'mongoose';
+import { connect } from 'mongoose';
+import config from '../src/libs/configuration.js';
 
 const dbConnect = async () => {
-  await mongoose
-    .connect('mongodb://localhost:27017/fmanage')
+  await connect(config.dbURL)
     .then(() => console.log('Database connection established'))
     .catch((err) => console.log('Error connecting to Database: ', err));
 };

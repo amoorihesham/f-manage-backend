@@ -10,6 +10,7 @@ import bannersRouter from './src/modules/banners/banners.routes.js';
 import brandsRouter from './src/modules/brands/brands.routes.js';
 import ordersRouter from './src/modules/orders/orders.routes.js';
 import cookieParser from 'cookie-parser';
+import config from './src/libs/configuration.js';
 
 dotenv.config();
 
@@ -17,13 +18,12 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: config.crossOrigin,
     credentials: true,
   })
 );
 app.use(cookieParser());
 app.use('/uploads', express.static('uploads'));
-
 app.use(authRouter);
 app.use(usersRouter);
 app.use(productsRouter);
@@ -33,4 +33,14 @@ app.use(bannersRouter);
 app.use(brandsRouter);
 app.use(ordersRouter);
 
-app.listen(process.env.PORT, () => console.log('App Running ==> ', process.env.PORT));
+app.listen(config.port, () =>
+  console.log(`
+  -----------*************************************************------------------
+  ----------- Server Started Successfully -----------
+  ----------- Current Port : [ ${config.port} ] -----------
+  ----------- Frontend Origin : [ ${config.crossOrigin} ] -----------
+  ----------- Current Environment : [ ${process.env.NODE_ENV} ] -----------
+  ----------- Connected Database : [ ${config.dbConnection} ]
+  -----------*************************************************------------------
+  `)
+);
