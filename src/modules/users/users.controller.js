@@ -5,9 +5,11 @@ import hashPassword from '../../utils/hashPassword.js';
 import serverErrorResponse from '../../utils/serverErrorResponse.js';
 
 export const getAllUsers = async (req, res, next) => {
+  console.log(req.userData);
   try {
     await dbConnect();
-    const users = await User.find({}, '_id name role email activated phone createdAt');
+    const users = await User.find();
+    console.log(users);
     return res.status(200).json({ success: true, message: 'All user returned successfully', data: users });
   } catch (error) {
     serverErrorResponse(res, error);
