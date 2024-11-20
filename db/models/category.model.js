@@ -4,7 +4,7 @@ const categorySchema = new Schema(
   {
     title: { type: String, required: true },
     image: String,
-    subCategories: [{ type: Schema.Types.ObjectId, ref: 'subCategory' }],
+    subCategories: [{ type: Schema.Types.ObjectId, ref: 'sub-category' }],
   },
   { timestamps: true }
 );
