@@ -1,10 +1,10 @@
 import { model, Schema } from 'mongoose';
 
 const orderSchema = new Schema({
-  customer: { type: Schema.Types.ObjectId, ref: 'User' },
+  customer: { type: Schema.Types.ObjectId, ref: 'user' },
   products: [
     {
-      _id: { type: Schema.Types.ObjectId, ref: 'Product' },
+      _id: { type: Schema.Types.ObjectId, ref: 'product' },
       quantity: { type: Number, required: true },
       price: { type: Number, required: true },
     },
@@ -23,6 +23,7 @@ const orderSchema = new Schema({
   shipping_address: {
     city: { type: String, required: true },
     country: { type: String, required: true },
+    nearest_landmark: { type: String },
     postal_code: { type: String, required: true },
   },
   phone_number: [{ type: String, required: true }],
@@ -30,10 +31,10 @@ const orderSchema = new Schema({
   paid_at: { type: String },
   is_delivered: { type: Boolean, required: true, default: false },
   delivered_at: { type: String },
-  delivered_by: { type: Schema.Types.ObjectId, ref: 'User' },
+  deliver_by: { type: Schema.Types.ObjectId, ref: 'user' },
   is_cancelled: { type: Boolean, required: true, default: false },
   cancelled_at: { type: String },
-  cancelled_by: { type: Schema.Types.ObjectId, ref: 'User' },
+  cancelled_by: { type: Schema.Types.ObjectId, ref: 'user' },
   sub_total: { type: Number, required: true },
   total_price: { type: Number, required: true },
 });

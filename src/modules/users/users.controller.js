@@ -5,31 +5,26 @@ import hashPassword from '../../utils/hashPassword.js';
 import serverErrorResponse from '../../utils/serverErrorResponse.js';
 
 export const getAllUsers = async (req, res, next) => {
-  console.log(req.userData);
   try {
-    await dbConnect();
     const users = await User.find();
-    console.log(users);
     return res.status(200).json({ success: true, message: 'All user returned successfully', data: users });
   } catch (error) {
-    serverErrorResponse(res, error);
+    return serverErrorResponse(res, error);
   }
 };
 export const getUserDetails = async (req, res, next) => {
   const { _id } = req.params;
   try {
-    await dbConnect();
     const user = await User.findById(_id, '_id name role email activated phone createdAt');
     if (!user) return res.status(404).json({ success: false, message: 'Not found a user match this id', data: {} });
     return res.status(200).json({ success: true, message: 'User returned successfully', data: user });
   } catch (error) {
-    serverErrorResponse(res, error);
+    return serverErrorResponse(res, error);
   }
 };
 export const createUser = async (req, res, next) => {
   const { name, email, password, phone, role, activated } = req.body;
   try {
-    await dbConnect();
     if (await checkEmailAvailability(email)) return res.status(404).json({ success: false, message: 'Email already exists', data: {} });
 
     const hashedPassword = await hashPassword(password);
@@ -44,15 +39,13 @@ export const createUser = async (req, res, next) => {
     const outputUser = await User.findById(user._id).select('-password').lean();
     return res.status(201).json({ success: true, message: 'User created successfully', data: outputUser });
   } catch (error) {
-    serverErrorResponse(res, error);
+    return serverErrorResponse(res, error);
   }
 };
 export const updateUser = async (req, res, next) => {
   const { _id } = req.params;
   let { name, email, password, phone, role, activated } = req.body;
   try {
-    await dbConnect();
-
     if (email) {
       if (await checkEmailAvailability(email)) {
         let hashedPassword;
@@ -72,17 +65,16 @@ export const updateUser = async (req, res, next) => {
     }
     return res.status(404).json({ success: false, message: 'Email Not exists', data: {} });
   } catch (error) {
-    serverErrorResponse(res, error);
+    return serverErrorResponse(res, error);
   }
 };
 export const deleteUser = async (req, res, next) => {
   const { _id } = req.params;
   try {
-    await dbConnect();
     const user = await User.findByIdAndDelete(_id);
     if (!user) return res.status(404).json({ success: false, message: 'Not found a user match this id', data: {} });
     return res.status(200).json({ success: true, message: 'User deleted successfully', data: {} });
   } catch (error) {
-    serverErrorResponse(res, error);
+    return serverErrorResponse(res, error);
   }
 };

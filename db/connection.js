@@ -1,5 +1,4 @@
 import { connect } from 'mongoose';
-import config from '../src/libs/configuration.js';
 
 const dbConnect = async () => {
   await connect(process.env.MONGO_URI)

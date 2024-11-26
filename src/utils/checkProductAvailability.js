@@ -2,7 +2,6 @@ import dbConnect from '../../db/connection.js';
 import Product from '../../db/models/product.model.js';
 export default async function (orderProducts) {
   try {
-    await dbConnect();
     const availabilityChecks = orderProducts.map(async (product) => {
       const productInStock = await Product.findById(product._id);
 
@@ -12,9 +11,7 @@ export default async function (orderProducts) {
       }
 
       if (product.quantity > productInStock.stock_quantity) {
-        console.log(
-          `Product ${product._id} is out of stock. Only ${productInStock.stock_quantity} available.`
-        );
+        console.log(`Product ${product._id} is out of stock. Only ${productInStock.stock_quantity} available.`);
         return { product: product._id, available: false };
       }
 

@@ -11,6 +11,7 @@ import brandsRouter from './src/modules/brands/brands.routes.js';
 import ordersRouter from './src/modules/orders/orders.routes.js';
 import cookieParser from 'cookie-parser';
 import config from './src/libs/configuration.js';
+import dbConnect from './db/connection.js';
 
 dotenv.config();
 
@@ -33,14 +34,15 @@ app.use(bannersRouter);
 app.use(brandsRouter);
 app.use(ordersRouter);
 
-app.listen(config.port, () =>
+app.listen(config.port, async () => {
+  await dbConnect();
   console.log(`
   -----------*************************************************------------------
   ----------- Server Started Successfully -----------
   ----------- Current Port : [ ${config.port} ] -----------
   ----------- Frontend Origin : [ ${config.crossOrigin} ] -----------
   ----------- Current Environment : [ ${process.env.NODE_ENV} ] -----------
-  ----------- Connected Database : [ ${config.dbConnection} ]
+  ----------- Connected Database : [ ${process.env.NODE_ENV === 'production' ? 'Mongodb Atlas' : 'Local Database'} ]
   -----------*************************************************------------------
-  `)
-);
+  `);
+});
