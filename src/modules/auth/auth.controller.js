@@ -37,7 +37,7 @@ export const login = async (req, res) => {
 
     if (!isUserExist) return res.status(404).json({ success: false, message: 'No users with this email Address', user: null });
 
-    const isPasswordMatch = await bcrypt.compare('12345678', isUserExist.password);
+    const isPasswordMatch = await bcrypt.compare(password, isUserExist.password);
 
     if (!isPasswordMatch)
       return res.status(400).json({
@@ -54,21 +54,12 @@ export const login = async (req, res) => {
       activated: isUserExist.activated,
       createdAt: isUserExist.createdAt,
     };
-    const token = generateUserToken(rUser);
 
-    return res
-      .cookie('token', token, {
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        secure: true,
-        sameSite: 'None',
-      })
-      .status(200)
-      .json({
-        success: true,
-        message: 'Logged in successfully',
-        user: { ...rUser, token },
-      });
+    return res.status(200).json({
+      success: true,
+      message: 'Logged in successfully',
+      user: rUser,
+    });
   } catch (error) {
     return serverErrorResponse(res, error);
   }
